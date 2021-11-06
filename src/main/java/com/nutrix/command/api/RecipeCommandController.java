@@ -14,6 +14,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import result.RecipeResult;
 
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
@@ -55,7 +56,7 @@ public class RecipeCommandController {
             if (ex != null) {
                 return new ErrorResponseDto(ex.getMessage());
             }
-            return new CreateRecipeModel(
+            return new RecipeResult(
                     createRecipeC.getId(),
                     createRecipeC.getName(),
                     createRecipeC.getDescription(),
@@ -69,7 +70,7 @@ public class RecipeCommandController {
         });
         try {
             Object response = futureResponse.get();
-            if (response instanceof CreateRecipeModel) {
+            if (response instanceof RecipeResult) {
                 return new ResponseEntity<>(response, HttpStatus.CREATED);
             }
             return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);

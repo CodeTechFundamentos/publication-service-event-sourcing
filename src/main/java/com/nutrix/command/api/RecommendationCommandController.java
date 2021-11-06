@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import result.RecommendationResult;
 
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
@@ -55,7 +56,7 @@ public class RecommendationCommandController {
             if (ex != null) {
                 return new ErrorResponseDto(ex.getMessage());
             }
-            return new CreateRecommendationModel(
+            return new RecommendationResult(
                     createRecommendationC.getId(),
                     createRecommendationC.getName(),
                     createRecommendationC.getDescription(),
@@ -66,7 +67,7 @@ public class RecommendationCommandController {
         });
         try {
             Object response = futureResponse.get();
-            if (response instanceof CreateRecommendationModel) {
+            if (response instanceof RecommendationResult) {
                 return new ResponseEntity<>(response, HttpStatus.CREATED);
             }
             return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);

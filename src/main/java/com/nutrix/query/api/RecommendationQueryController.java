@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import queries.GetRecommendationsQuery;
+import result.RecommendationResult;
 
 import java.util.List;
 
@@ -35,13 +36,13 @@ public class RecommendationQueryController {
             @ApiResponse(code=201, message = "Recommendation encontrados"),
             @ApiResponse(code=404, message = "Recommendation no encontrados")
     })
-    public ResponseEntity<List<CreateRecommendationModel>> getAll(){
+    public ResponseEntity<List<RecommendationResult>> getAll(){
         try{
             GetRecommendationsQuery getRecommendationsQuery = new GetRecommendationsQuery();
-            List<CreateRecommendationModel> recommendationModels = queryGateway.query(getRecommendationsQuery,
-                    ResponseTypes.multipleInstancesOf(CreateRecommendationModel.class))
+            List<RecommendationResult> recommendations = queryGateway.query(getRecommendationsQuery,
+                    ResponseTypes.multipleInstancesOf(RecommendationResult.class))
                     .join();
-            return new ResponseEntity<>(recommendationModels, HttpStatus.CREATED);
+            return new ResponseEntity<>(recommendations, HttpStatus.CREATED);
 
         }catch (Exception e){
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);

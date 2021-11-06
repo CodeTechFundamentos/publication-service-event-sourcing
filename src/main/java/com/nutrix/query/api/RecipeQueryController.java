@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import queries.GetRecipesQuery;
+import result.RecipeResult;
 
 import java.util.List;
 
@@ -35,13 +36,13 @@ public class RecipeQueryController {
             @ApiResponse(code=201, message = "Recipe encontrados"),
             @ApiResponse(code=404, message = "Recipe no encontrados")
     })
-    public ResponseEntity<List<CreateRecipeModel>> getAll(){
+    public ResponseEntity<List<RecipeResult>> getAll(){
         try{
             GetRecipesQuery getRecipesQuery = new GetRecipesQuery();
-            List<CreateRecipeModel> recipeModels = queryGateway.query(getRecipesQuery,
-                    ResponseTypes.multipleInstancesOf(CreateRecipeModel.class))
+            List<RecipeResult> recipes = queryGateway.query(getRecipesQuery,
+                    ResponseTypes.multipleInstancesOf(RecipeResult.class))
                     .join();
-            return new ResponseEntity<>(recipeModels, HttpStatus.CREATED);
+            return new ResponseEntity<>(recipes, HttpStatus.CREATED);
 
         }catch (Exception e){
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
