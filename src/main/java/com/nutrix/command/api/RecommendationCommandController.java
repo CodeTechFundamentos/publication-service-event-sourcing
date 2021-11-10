@@ -2,7 +2,10 @@ package com.nutrix.command.api;
 
 import com.nutrix.command.application.dto.ErrorResponseDto;
 import com.nutrix.query.models.CreateRecommendationModel;
+import com.nutrix.query.models.UpdateRecommendationModel;
 import command.CreateRecommendationC;
+import command.DeleteRecommendationC;
+import command.UpdateRecommendationC;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -13,11 +16,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import result.RecommendationResult;
+import result.RecommendationUpdateResult;
 
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
@@ -74,5 +75,56 @@ public class RecommendationCommandController {
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
+    //Event Sourcing Put
+    @PutMapping(path = "/{recommendationId}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Modificación de un Recommendation de un Nutritionist", notes ="Método que modifica un Recipe" )
+    @ApiResponses({
+            @ApiResponse(code=201, message = "Recommendation modificado"),
+            @ApiResponse(code=404, message = "Recommendation no modificado")
+    })
+    public ResponseEntity<Object> updateRecommendation(@PathVariable("recommendationId") String recommendationId, @RequestBody UpdateRecommendationModel recommendation){
+        UpdateRecommendationC updateRecommendationC = new UpdateRecommendationC(
+                recommendationId,
+                recommendation.getName(),
+                recommendation.getDescription(),
+                recommendation.getCreatedAt(),
+                recommendation.getLastModification(),
+                recommendation.getNutritionistId()
+        );
+        CompletableFuture<Object> future = commandGateway.send(updateRecommendationC);
+        CompletableFuture<Object> futureResponse = future.handle((ok, ex) -> {
+            if (ex != null) {
+                return new ErrorResponseDto(ex.getMessage());
+            }
+            return new RecommendationUpdateResult(
+                    updateRecommendationC.getId(),
+                    updateRecommendationC.getName(),
+                    updateRecommendationC.getDescription(),
+                    updateRecommendationC.getCreatedAt(),
+                    updateRecommendationC.getLastModification(),
+                    updateRecommendationC.getNutritionistId()
+            );
+        });
+        try {
+            Object response = futureResponse.get();
+            if (response instanceof RecommendationUpdateResult) {
+                return new ResponseEntity<>(response, HttpStatus.OK);
+            }
+            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    //Event Sourcing Delete
+    @DeleteMapping(path = "/{recommendationId}")
+    @ApiOperation(value = "Eliminación de un Recommendation de un Nutritionist", notes ="Método que elimina un Recommendation" )
+    @ApiResponses({
+            @ApiResponse(code=201, message = "Recommendation eliminado"),
+            @ApiResponse(code=404, message = "Recommendation no eliminado")
+    })
+    public CompletableFuture<String> deleteRecommendation(@PathVariable("recommendationId") String recommendationId){
+        return commandGateway.send(new DeleteRecommendationC(recommendationId));
     }
 }

@@ -8,5 +8,7 @@ import java.util.Date;
 public class UpdateRecommendationModel {
     private String name;
     private String description;
+    private Date createdAt;
     private Date lastModification;
+    private Integer nutritionistId;
 }

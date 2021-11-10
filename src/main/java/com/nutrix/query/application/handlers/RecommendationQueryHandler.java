@@ -6,6 +6,7 @@ import org.axonframework.queryhandling.QueryHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import queries.GetRecommendationsQuery;
+import result.RecommendationResult;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -20,12 +21,12 @@ public class RecommendationQueryHandler {
     }
 
     @QueryHandler
-    public List<CreateRecommendationModel> handle(GetRecommendationsQuery query) {
+    public List<RecommendationResult> handle(GetRecommendationsQuery query) {
         List<Recommendation> recipes = recommendationRepository.findAll();
 
-        List<CreateRecommendationModel> recommendationModels =
+        List<RecommendationResult> recommendationModels =
                 recipes.stream()
-                        .map(recipe -> new CreateRecommendationModel(
+                        .map(recipe -> new RecommendationResult(
                                 recipe.getId(),
                                 recipe.getName(),
                                 recipe.getDescription(),

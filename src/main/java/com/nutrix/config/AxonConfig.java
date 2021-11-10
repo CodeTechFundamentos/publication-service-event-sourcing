@@ -1,6 +1,7 @@
 package com.nutrix.config;
 
 import com.nutrix.command.domain.RecipeA;
+import com.nutrix.command.domain.RecommendationA;
 import org.axonframework.eventsourcing.EventSourcingRepository;
 import org.axonframework.eventsourcing.eventstore.EventStore;
 import org.axonframework.modelling.command.Repository;
@@ -15,8 +16,14 @@ public class AxonConfig {
                 .eventStore(eventStore)
                 .build();
     }
-}
+    @Bean
+    public Repository<RecommendationA> eventSourcingRepository2(EventStore eventStore) {
+        return EventSourcingRepository.builder(RecommendationA.class)
+                .eventStore(eventStore)
+                .build();
+    }
 
+}
 
 //    @Bean
 //    XStream xstream(){

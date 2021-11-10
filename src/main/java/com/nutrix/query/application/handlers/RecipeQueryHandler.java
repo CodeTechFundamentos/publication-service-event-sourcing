@@ -6,6 +6,7 @@ import org.axonframework.queryhandling.QueryHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import queries.GetRecipesQuery;
+import result.RecipeResult;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -20,12 +21,12 @@ public class RecipeQueryHandler {
     }
 
     @QueryHandler
-    public List<CreateRecipeModel> handle(GetRecipesQuery query) {
+    public List<RecipeResult> handle(GetRecipesQuery query) {
         List<Recipe> recipes = recipeRepository.findAll();
 
-        List<CreateRecipeModel> recipeModels =
+        List<RecipeResult> recipeModels =
                 recipes.stream()
-                        .map(recipe -> new CreateRecipeModel(
+                        .map(recipe -> new RecipeResult(
                                 recipe.getId(),
                                 recipe.getName(),
                                 recipe.getDescription(),

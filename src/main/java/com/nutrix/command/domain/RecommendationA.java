@@ -2,8 +2,12 @@ package com.nutrix.command.domain;
 
 import com.nutrix.command.application.Notification;
 import command.CreateRecommendationC;
+import command.DeleteRecommendationC;
+import command.UpdateRecommendationC;
 import events.RecipeCreatedEvent;
 import events.RecommendationCreatedEvent;
+import events.RecommendationDeletedEvent;
+import events.RecommendationUpdatedEvent;
 import org.axonframework.commandhandling.CommandHandler;
 import org.axonframework.eventsourcing.EventSourcingHandler;
 import org.axonframework.modelling.command.AggregateIdentifier;
@@ -45,9 +49,49 @@ public class RecommendationA {
         apply(event);
     }
 
+    @CommandHandler
+    public void on(UpdateRecommendationC updateRecommendationC){
+        Notification notification = validateUpdateRecommendation(updateRecommendationC);
+        if (notification.hasErrors()) {
+            throw new IllegalArgumentException(notification.errorMessage());
+        }
+        RecommendationUpdatedEvent event = new RecommendationUpdatedEvent(
+                updateRecommendationC.getId(),
+                updateRecommendationC.getName(),
+                updateRecommendationC.getDescription(),
+                updateRecommendationC.getCreatedAt(),
+                updateRecommendationC.getLastModification(),
+                updateRecommendationC.getNutritionistId()
+        );
+        apply(event);
+    }
+
+    @CommandHandler
+    public void on(DeleteRecommendationC deleteRecommendationC){
+        Notification notification = validateDeleteRecommendation(deleteRecommendationC);
+        if (notification.hasErrors()) {
+            throw new IllegalArgumentException(notification.errorMessage());
+        }
+        RecommendationDeletedEvent event = new RecommendationDeletedEvent(
+                deleteRecommendationC.getId()
+        );
+        apply(event);
+    }
+
     private Notification validateRecommendation(CreateRecommendationC createRecommendationC) {
         Notification notification = new Notification();
         validateRecommendationId(createRecommendationC.getId(), notification);
+        return notification;
+    }
+
+    private Notification validateUpdateRecommendation(UpdateRecommendationC updateRecommendationC) {
+        Notification notification = new Notification();
+        validateRecommendationId(updateRecommendationC.getId(), notification);
+        return notification;
+    }
+    private Notification validateDeleteRecommendation(DeleteRecommendationC deleteRecommendationC) {
+        Notification notification = new Notification();
+        validateRecommendationId(deleteRecommendationC.getId(), notification);
         return notification;
     }
 
@@ -67,5 +111,20 @@ public class RecommendationA {
         this.createdAt = recommendationCreatedEvent.getCreatedAt();
         this.lastModification = recommendationCreatedEvent.getLastModification();
         this.nutritionistId = recommendationCreatedEvent.getNutritionistId();
+    }
+
+    @EventSourcingHandler
+    public void on(RecommendationUpdatedEvent recommendationUpdatedEvent){
+        this.id = recommendationUpdatedEvent.getId();
+        this.name = recommendationUpdatedEvent.getName();
+        this.description = recommendationUpdatedEvent.getDescription();
+        this.createdAt = recommendationUpdatedEvent.getCreatedAt();
+        this.lastModification = recommendationUpdatedEvent.getLastModification();
+        this.nutritionistId = recommendationUpdatedEvent.getNutritionistId();
+    }
+
+    @EventSourcingHandler
+    public void on(RecommendationDeletedEvent recommendationDeletedEvent){
+        this.id = recommendationDeletedEvent.getId();
     }
 }

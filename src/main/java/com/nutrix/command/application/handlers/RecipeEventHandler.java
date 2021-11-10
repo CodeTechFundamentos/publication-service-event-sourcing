@@ -3,6 +3,8 @@ package com.nutrix.command.application.handlers;
 import com.nutrix.command.infra.IRecipeRepository;
 import com.nutrix.command.infra.Recipe;
 import events.RecipeCreatedEvent;
+import events.RecipeDeletedEvent;
+import events.RecipeUpdatedEvent;
 import org.axonframework.config.ProcessingGroup;
 import org.axonframework.eventhandling.EventHandler;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,5 +34,24 @@ public class RecipeEventHandler {
                 event.getNutritionistId()
         )
         );
+    }
+    @EventHandler
+    public void on(RecipeUpdatedEvent event){
+        recipeRepository.save(new Recipe(
+                event.getId(),
+                event.getName(),
+                event.getDescription(),
+                event.getPreparation(),
+                event.getIngredients(),
+                event.getFavorite(),
+                event.getCreatedAt(),
+                event.getLastModification(),
+                event.getNutritionistId()
+                )
+        );
+    }
+    @EventHandler
+    public void on(RecipeDeletedEvent event){
+        recipeRepository.deleteById(event.getId());
     }
 }
