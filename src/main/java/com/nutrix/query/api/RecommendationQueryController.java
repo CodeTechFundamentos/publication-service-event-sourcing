@@ -1,5 +1,7 @@
 package com.nutrix.query.api;
 
+import com.nutrix.command.infra.Recipe;
+import com.nutrix.command.infra.Recommendation;
 import com.nutrix.query.models.CreateRecommendationModel;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -33,8 +35,11 @@ public class RecommendationQueryController {
     @GetMapping(path = "", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Búsqueda de todos los Recommendation", notes ="Método que busca a todos los Recommendation" )
     @ApiResponses({
-            @ApiResponse(code=201, message = "Recommendation encontrados"),
-            @ApiResponse(code=404, message = "Recommendation no encontrados")
+            @ApiResponse(code=200, message = "La operación fue exitosa", response = Recommendation.class),
+            @ApiResponse(code=201, message = "Recommendations encontrados", response = Recommendation.class),
+            @ApiResponse(code=401, message = "Es necesario autenticar para obtener la respuesta solicitada"),
+            @ApiResponse(code=403, message = "El cliente no posee los permisos necesarios"),
+            @ApiResponse(code=404, message = "Recommendations no encontrados")
     })
     public ResponseEntity<List<RecommendationResult>> getAll(){
         try{

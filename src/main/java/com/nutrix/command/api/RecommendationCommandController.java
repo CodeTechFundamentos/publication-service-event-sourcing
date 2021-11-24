@@ -1,15 +1,14 @@
 package com.nutrix.command.api;
 
 import com.nutrix.command.application.dto.ErrorResponseDto;
+import com.nutrix.command.infra.Recipe;
+import com.nutrix.command.infra.Recommendation;
 import com.nutrix.query.models.CreateRecommendationModel;
 import com.nutrix.query.models.UpdateRecommendationModel;
 import command.CreateRecommendationC;
 import command.DeleteRecommendationC;
 import command.UpdateRecommendationC;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
+import io.swagger.annotations.*;
 import org.axonframework.commandhandling.gateway.CommandGateway;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -39,8 +38,11 @@ public class RecommendationCommandController {
     @PostMapping(path = "", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Registro de un Recommendation de un Nutritionist", notes ="Método que registra un Recommendation" )
     @ApiResponses({
-            @ApiResponse(code=201, message = "Recommendation creado"),
-            @ApiResponse(code=404, message = "Recommendation no creado")
+            @ApiResponse(code=200, message = "La operación fue exitosa", response = Recommendation.class),
+            @ApiResponse(code=201, message = "Recommendation creado", response = Recommendation.class),
+            @ApiResponse(code=401, message = "Es necesario autenticar para ejecutar la solicitud"),
+            @ApiResponse(code=403, message = "El cliente no posee los permisos necesarios"),
+            @ApiResponse(code=404, message = "Recommendation no fue creado")
     })
     public ResponseEntity<Object> insertRecommendation(@Validated @RequestBody CreateRecommendationModel recommendation){
         String id = UUID.randomUUID().toString();
@@ -80,8 +82,11 @@ public class RecommendationCommandController {
     @PutMapping(path = "/{recommendationId}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Modificación de un Recommendation de un Nutritionist", notes ="Método que modifica un Recipe" )
     @ApiResponses({
-            @ApiResponse(code=201, message = "Recommendation modificado"),
-            @ApiResponse(code=404, message = "Recommendation no modificado")
+            @ApiResponse(code=200, message = "La operación fue exitosa", response = Recommendation.class),
+            @ApiResponse(code=201, message = "Recommendation modificado", response = Recommendation.class),
+            @ApiResponse(code=401, message = "Es necesario autenticar para ejecutar la solicitud"),
+            @ApiResponse(code=403, message = "El cliente no posee los permisos necesarios"),
+            @ApiResponse(code=404, message = "Recommendation no fue modificado")
     })
     public ResponseEntity<Object> updateRecommendation(@PathVariable("recommendationId") String recommendationId, @RequestBody UpdateRecommendationModel recommendation){
         UpdateRecommendationC updateRecommendationC = new UpdateRecommendationC(
@@ -121,8 +126,11 @@ public class RecommendationCommandController {
     @DeleteMapping(path = "/{recommendationId}")
     @ApiOperation(value = "Eliminación de un Recommendation de un Nutritionist", notes ="Método que elimina un Recommendation" )
     @ApiResponses({
-            @ApiResponse(code=201, message = "Recommendation eliminado"),
-            @ApiResponse(code=404, message = "Recommendation no eliminado")
+            @ApiResponse(code=200, message = "La operación fue exitosa", response = Recommendation.class),
+            @ApiResponse(code=201, message = "Recommendation eliminado", response = Recommendation.class),
+            @ApiResponse(code=401, message = "Es necesario autenticar para ejecutar la solicitud"),
+            @ApiResponse(code=403, message = "El cliente no posee los permisos necesarios"),
+            @ApiResponse(code=404, message = "Recommendation no fue eliminado")
     })
     public CompletableFuture<String> deleteRecommendation(@PathVariable("recommendationId") String recommendationId){
         return commandGateway.send(new DeleteRecommendationC(recommendationId));

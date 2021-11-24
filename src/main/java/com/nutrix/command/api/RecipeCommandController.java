@@ -1,6 +1,7 @@
 package com.nutrix.command.api;
 
 import com.nutrix.command.application.dto.ErrorResponseDto;
+import com.nutrix.command.infra.Recipe;
 import com.nutrix.query.models.CreateRecipeModel;
 import com.nutrix.query.models.UpdateRecipeModel;
 import command.CreateRecipeC;
@@ -39,8 +40,11 @@ public class RecipeCommandController {
     @PostMapping(path = "", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Registro de un Recipe de un Nutritionist", notes ="Método que registra un Recipe" )
     @ApiResponses({
-            @ApiResponse(code=201, message = "Recipe creado"),
-            @ApiResponse(code=404, message = "Recipe no creado")
+            @ApiResponse(code=200, message = "La operación fue exitosa", response = Recipe.class),
+            @ApiResponse(code=201, message = "Recipe creado", response = Recipe.class),
+            @ApiResponse(code=401, message = "Es necesario autenticar para ejecutar la solicitud"),
+            @ApiResponse(code=403, message = "El cliente no posee los permisos necesarios"),
+            @ApiResponse(code=404, message = "Recipe no fue creado")
     })
     public ResponseEntity<Object> insertRecipe(@Validated @RequestBody CreateRecipeModel recipe){
         String id = UUID.randomUUID().toString();
@@ -86,8 +90,11 @@ public class RecipeCommandController {
     @PutMapping(path = "/{recipeId}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Modificación de un Recipe de un Nutritionist", notes ="Método que modifica un Recipe" )
     @ApiResponses({
-            @ApiResponse(code=201, message = "Recipe modificado"),
-            @ApiResponse(code=404, message = "Recipe no modificado")
+            @ApiResponse(code=200, message = "La operación fue exitosa", response = Recipe.class),
+            @ApiResponse(code=201, message = "Recipe modificada", response = Recipe.class),
+            @ApiResponse(code=401, message = "Es necesario autenticar para ejecutar la solicitud"),
+            @ApiResponse(code=403, message = "El cliente no posee los permisos necesarios"),
+            @ApiResponse(code=404, message = "Recipe no fue modificado")
     })
     public ResponseEntity<Object> updateRecipe(@PathVariable("recipeId") String recipeId, @RequestBody UpdateRecipeModel recipe){
         UpdateRecipeC updateRecipeC = new UpdateRecipeC(
@@ -133,8 +140,11 @@ public class RecipeCommandController {
     @DeleteMapping(path = "/{recipeId}")
     @ApiOperation(value = "Eliminación de un Recipe de un Nutritionist", notes ="Método que elimina un Recipe" )
     @ApiResponses({
-            @ApiResponse(code=201, message = "Recipe eliminado"),
-            @ApiResponse(code=404, message = "Recipe no eliminado")
+            @ApiResponse(code=200, message = "La operación fue exitosa", response = Recipe.class),
+            @ApiResponse(code=201, message = "Recipe eliminado", response = Recipe.class),
+            @ApiResponse(code=401, message = "Es necesario autenticar para ejecutar la solicitud"),
+            @ApiResponse(code=403, message = "El cliente no posee los permisos necesarios"),
+            @ApiResponse(code=404, message = "Recipe no fue eliminado")
     })
     public CompletableFuture<String> deleteRecipe(@PathVariable("recipeId") String recipeId){
         return commandGateway.send(new DeleteRecipeC(recipeId));

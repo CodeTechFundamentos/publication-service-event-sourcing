@@ -27,7 +27,7 @@ public class RecommendationA {
     private String description;
     private Date createdAt;
     private Date lastModification;
-    private Integer nutritionistId;
+    private String nutritionistId;
 
     public RecommendationA(){
     }

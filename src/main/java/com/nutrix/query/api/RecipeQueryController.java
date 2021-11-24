@@ -1,5 +1,6 @@
 package com.nutrix.query.api;
 
+import com.nutrix.command.infra.Recipe;
 import com.nutrix.query.models.CreateRecipeModel;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -33,8 +34,11 @@ public class RecipeQueryController {
     @GetMapping(path = "", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Búsqueda de todos los Recipe", notes ="Método que busca a todos los Recipe" )
     @ApiResponses({
-            @ApiResponse(code=201, message = "Recipe encontrados"),
-            @ApiResponse(code=404, message = "Recipe no encontrados")
+            @ApiResponse(code=200, message = "La operación fue exitosa", response = Recipe.class),
+            @ApiResponse(code=201, message = "Recipes encontrados", response = Recipe.class),
+            @ApiResponse(code=401, message = "Es necesario autenticar para obtener la respuesta solicitada"),
+            @ApiResponse(code=403, message = "El cliente no posee los permisos necesarios"),
+            @ApiResponse(code=404, message = "Recipes no encontrados")
     })
     public ResponseEntity<List<RecipeResult>> getAll(){
         try{
